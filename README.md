@@ -13,7 +13,9 @@ Third-year Computer Engineering student , Chulalongkorn University
 
 **Desktop Side**
 1. Source-Code here [SimpleSOM-junkie](https://github.com/Tutorgaming/SimpleSOM-junkie) 
+
 2. Windows 7 (According to serial transmission Library)
+
 3. SFML Library - Draw Visualization 
   - [SFML](http://www.sfml-dev.org/download.php) -Please Select 32-Bit - code:block set path to = C:\SFML-2.3
 4. CODE::BLOCK (IDE for C++/C)  - Project files formatted for code:Block
