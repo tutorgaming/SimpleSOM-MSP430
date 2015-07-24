@@ -29,18 +29,13 @@ typedef struct _data_{
     unsigned const int  COL             = 15;
     unsigned int        iteration_count = 0;
     const int           element_count   = 4;
-    //int                 class_count     = 3; // IRIS DATASET = 3
 	int 				x				= 0;
 	int 				y				= 0;
 	int 				result			= 0;
 /*************************************
  * Data Structure for a node
  *************************************/
-
-	/*double 			data[line_count][element_count];
-	double 				real[line_count][element_count];
-	int    				class[line_count];*/
-
+	//NOTHING HERE
 /*************************************
  * Function
  *************************************/
@@ -54,13 +49,6 @@ void uart_newline(){
 	uart_putchar('\n');
 	uart_putchar('\r');
 }
-void println(char *input , int input_size){
-	int i = input_size;
-	for(; i>0 ; i--)uart_putchar(input[input_size-i]);
-		uart_putchar('\n');
-		uart_putchar('\r');
-}
-
 void sendACK(){
 	uart_putchar('@');
 	uart_newline();
@@ -96,7 +84,7 @@ void initialize(){
 	 UCA1CTL1 &= ~UCSWRST; // Initialize the state machine
 	 // Enable USCI_A1 RX interrupt
 	 UCA1IE |= UCRXIE;
-	 //LED Initialization
+	 // LED Initialization
 	 P1DIR |= 0x01;
 	 P4DIR |= 0x80;
 	 P1OUT = 0b00000000;
@@ -114,7 +102,17 @@ double euclidian_distance_vector_squre(double input1[] , double input2[]){
 		dist += (input1[i] - input2[i])*(input1[i] - input2[i]);
 	}
 	return dist;
+}
 
+void blinking(int times){
+	int t;
+	for (t = 0 ; t < times ; t++){
+		P1OUT = 0b00000001;
+		_delay_cycles(500000);
+		P1OUT = 0b00000000;
+		_delay_cycles(500000);
+
+	}
 }
 
 
@@ -129,6 +127,7 @@ int main(void) {
 	// Receiver Interrupt
 		__bis_SR_register(GIE); //interrupts enabled
 		__no_operation();
+
 ////////////////////////////////////////////////////////////////////
 		// Receive RAW Data via serial
 			Node som_map[15][15];
@@ -145,91 +144,67 @@ int main(void) {
 					}
 				}
 			//Classification Array (position of trained data)
-					for(i = 0 ; i < ROW ; i++){
-						for(j = 0 ; j < COL ; j++){
-								while(input_enable == 1);
-									plotty[i][j] = atoi(inputArray);
-								sendACK();
-							}
+				for(i = 0 ; i < ROW ; i++){
+					for(j = 0 ; j < COL ; j++){
+						while(input_enable == 1);
+							plotty[i][j] = atoi(inputArray);
+						sendACK();
 					}
+				}
 		//GREEN LED SHOW THAT MODEL HAS FINISHED LOADING
-			P4OUT = 0b10000000;
-			P1OUT = 0b00000000;
+			P4OUT = 0b10000000;//GREEN[7]-ON
+			P1OUT = 0b00000000;//RED[0]-OFF
+////////////////////////////////////////////////////////////////////
 
 		//Q&A Process
-		//double question[element_count];
 		double minimum = 10000;
 		double temp = 0;
-//		double a1 = 0;
-//		double a2 = 0;
-//		double a3 = 0;
-//		double a4 = 0;
-		double question[element_count];
+		double question[4];
 
 		while(1){
 			P1OUT = 0b00000000;
+
 			//Receive Question
-//			while (input_enable == 1);
-//				a1 = atof(inputArray);
-//			sendACK();
-//			while (input_enable == 1);
-//				a2 = atof(inputArray);
-//			sendACK();
-//			while (input_enable == 1);
-//				a3 = atof(inputArray);
-//			sendACK();
-//			while (input_enable == 1);
-//				a4 = atof(inputArray);
-//			sendACK();
 			for(e = 0 ; e < element_count ; e++){
 				while (input_enable == 1);
 					question[e] = atof(inputArray);
 				sendACK();
 			}
-
-//				for (i = 0; i < ROW; i++) {
-//					for (j = 0; j < COL; j++) {
-//						temp = (a1 - som_map[i][j].elements[0])*(a1 - som_map[i][j].elements[0]) +
-//								(a2 - som_map[i][j].elements[1])*(a2 - som_map[i][j].elements[1]) +
-//								(a3 - som_map[i][j].elements[2])*(a3 - som_map[i][j].elements[2]) +
-//								(a4 - som_map[i][j].elements[3])*(a4 - som_map[i][j].elements[3]);
-//						if (temp < minimum) {
-//							minimum = temp;
-//							x = j;
-//							y = i;
-//						}
-//					}
-//				}
-//				minimum = 10000;
-//				temp = 0;
-//
-//				for (i = 0; i < ROW; i++) {
-//					for (j = 0; j < COL; j++) {
-//						if(plotty[i][j] != 0 ){
-//							temp = euclidian_distance_point_square(x,y,j,i);
-//							if(temp < minimum){
-//								result = plotty[i][j];
-//								minimum = temp;
-//							}
-//						}
-//					}
-//				}
-//
-//				//GREEN LED SHOW THAT MODEL HAS FINISHED LOADING
-//				P4OUT = 0b10000000;
-//				P1OUT = 0b00000001;
-//				minimum = 10000;
-//				temp = 0;
-//				x=0;
-//				y=0;
-//				a1=0;
-//				a2=0;
-//				a3=0;
-//				a4=0;
+			//Find winner node
+			for (i = 0; i < ROW; i++) {
+				for (j = 0; j < COL; j++) {
+					temp = euclidian_distance_vector_squre(question,som_map[i][j].elements);
+					if (temp < minimum) {
+						minimum = temp;
+						x = j;
+						y = i;
+					}
+				}
+			}
+				minimum = 10000;
+				temp = 0;
+			//See if the winner node located near which trained data
+				for (i = 0; i < ROW; i++) {
+					for (j = 0; j < COL; j++) {
+						if(plotty[i][j] != 0 ){
+							temp = euclidian_distance_point_square(x,y,j,i);
+							if(temp < minimum){
+								result = plotty[i][j];
+								minimum = temp;
+							}
+						}
+					}
+				}
+			//Blink the LED according to the class number
+				blinking(result);
+			//FULL LED
+				P4OUT = 0b10000000;
+				P1OUT = 0b00000001;
+				minimum = 10000;
+				temp = 0;
+				x=0;
+				y=0;
 		}
-
-
-
 }
 
 
