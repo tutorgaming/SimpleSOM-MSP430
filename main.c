@@ -95,11 +95,12 @@ double euclidian_distance_point_square(int x1, int y1 , int x2 , int y2 ){
 	return (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2);
 }
 
-double euclidian_distance_vector_squre(double input1[] , double input2[]){
-	int i;
-	double dist;
-	for(i = 0 ; i < element_count ; i++){
-		dist += (input1[i] - input2[i])*(input1[i] - input2[i]);
+double euclidian_distance_vector_squre(double *input1 ,double *input2){
+	int ea;
+	double dist=0.00;
+	dist = 0.0;
+	for(ea = 0 ; ea < element_count ; ea++){
+		dist += (input1[ea] - input2[ea])*(input1[ea] - input2[ea]);
 	}
 	return dist;
 }
@@ -157,19 +158,31 @@ int main(void) {
 ////////////////////////////////////////////////////////////////////
 
 		//Q&A Process
-		double minimum = 10000;
-		double temp = 0;
 		double question[4];
+		//double *question = (double*)malloc(element_count *sizeof(double));
+		double temp = 0.0;
+		double minimum = 10000;
+
+
 
 		while(1){
 			P1OUT = 0b00000000;
 
 			//Receive Question
-			for(e = 0 ; e < element_count ; e++){
 				while (input_enable == 1);
-					question[e] = atof(inputArray);
+					question[0] = atof(inputArray);
 				sendACK();
-			}
+				while (input_enable == 1);
+					question[1] = atof(inputArray);
+				sendACK();
+				while (input_enable == 1);
+					question[2] = atof(inputArray);
+				sendACK();
+				while (input_enable == 1);
+					question[3] = atof(inputArray);
+				sendACK();
+
+
 			//Find winner node
 			for (i = 0; i < ROW; i++) {
 				for (j = 0; j < COL; j++) {
@@ -198,6 +211,7 @@ int main(void) {
 			//Blink the LED according to the class number
 				blinking(result);
 			//FULL LED
+				result = 0;
 				P4OUT = 0b10000000;
 				P1OUT = 0b00000001;
 				minimum = 10000;
