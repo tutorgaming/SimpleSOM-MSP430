@@ -70,6 +70,17 @@ void sendACK(){
 		P1OUT = 0b00000000;
 }
 
+char * itoa(int input,char str[11]){
+	sprintf(str,"%d",input);
+	return str;
+}
+
+void printstring(char *input){
+	int i;
+	for(i = 0 ; i < strlen(input); i++){
+		uart_putchar(input[i]);
+	}
+}
 
 void initialize(){
 	 // P3.3,4 = USCI_A1 TXD/RXD (USB TX RX on PORT 3.3,3.4)
@@ -209,6 +220,13 @@ int main(void) {
 					}
 				}
 			//Blink the LED according to the class number
+				uart_newline();
+				char *string = "Return = ";
+				char buf_int[11];
+				printstring(string);
+				printstring(itoa(result,buf_int));
+				uart_putchar('+');
+				uart_newline();
 				blinking(result);
 			//FULL LED
 				result = 0;
@@ -227,9 +245,9 @@ int main(void) {
 #pragma vector=USCI_A1_VECTOR
 __interrupt void USCI_A1_ISR(void){
 	//Input
-	while (!(UCA1IFG&UCTXIFG)); // Is the USCI_A0 TX buffer ready?
+	//while (!(UCA1IFG&UCTXIFG)); // Is the USCI_A0 TX buffer ready?
 		//Return text to Screen
-	UCA1TXBUF = UCA1RXBUF;
+	//UCA1TXBUF = UCA1RXBUF;
 	if(input_enable){
 		if(UCA1RXBUF == ','){
 			input_enable = 0;
