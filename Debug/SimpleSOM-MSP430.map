@@ -1,7 +1,7 @@
 ******************************************************************************
                   MSP430 Linker PC v4.4.3                      
 ******************************************************************************
->> Linked Tue Jul 28 19:40:06 2015
+>> Linked Thu Jul 30 16:15:01 2015
 
 OUTPUT FILE NAME:   <SimpleSOM-MSP430.out>
 ENTRY POINT SYMBOL: "_c_int00_noargs_noexit"  address: 00004436

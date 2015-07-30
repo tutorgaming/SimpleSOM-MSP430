@@ -141,7 +141,7 @@ int main(void) {
 		__no_operation();
 
 ////////////////////////////////////////////////////////////////////
-		// Receive RAW Data via serial
+		// Receive MAP Data via serial
 			Node som_map[15][15];
 		    int plotty[15][15];
 			int i , j , e;
@@ -194,7 +194,7 @@ int main(void) {
 				sendACK();
 
 
-			//Find winner node
+			//Find winner node in the map
 			for (i = 0; i < ROW; i++) {
 				for (j = 0; j < COL; j++) {
 					temp = euclidian_distance_vector_squre(question,som_map[i][j].elements);
@@ -225,7 +225,7 @@ int main(void) {
 				char buf_int[11];
 				printstring(string);
 				printstring(itoa(result,buf_int));
-				uart_putchar('+');
+				uart_putchar('+'); //End Seperator
 				uart_newline();
 				blinking(result);
 			//FULL LED
